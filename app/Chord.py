@@ -60,6 +60,9 @@ class Note:
     def transpose(self, half_steps: int):
         return Note(BASE_NOTES[self.index()+half_steps])
 
+    def create_chord(self, pattern):
+        return Chord([Note(self.note).transpose(half_steps) for half_steps in pattern])
+
     def create_minor_chord(self):
         return self.create_chord(MINOR_PATTERN)
 
@@ -68,10 +71,6 @@ class Note:
 
     def create_major_chord(self):
         return self.create_chord(MAJOR_PATTERN)
-
-    def create_chord(self, pattern):
-
-        return Chord([Note(self.note).transpose(half_steps) for half_steps in pattern])
 
 
 if __name__ == '__main__':
@@ -86,5 +85,5 @@ if __name__ == '__main__':
 
         if (chord.chord_types() != []):
             print(chord.info())
-        
+
     print(Note('F3').create_minor_7th_chord().info())
