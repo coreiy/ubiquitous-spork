@@ -1,9 +1,12 @@
 BASE_NOTES = [key+str(octave)
               for octave in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
               for key in ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']]
-MINOR_PATTERN = [0, 3, 7]
-MINOR_7TH_PATTERN = [0, 3, 7, 10]
-MAJOR_PATTERN = [0, 4, 7]
+
+CHORD_PATTERNS = {
+    'minor': [0, 3, 7],
+    'major': [0, 4, 7],
+    'minor_7h': [0, 3, 7, 10]
+}
 
 
 class Chord:
@@ -11,29 +14,20 @@ class Chord:
     def __init__(self, notes):
         self.notes = notes
         self.notes.sort(key=lambda x: x.index())
+        self.chord = self.get_chord_pattern()
 
-    def has_pattern(self, pattern):
-        note_pattern = [note.index()-self.notes[0].index()
-                        for note in self.notes]
-        return note_pattern == pattern
+    def get_chord_pattern(self):
+        return [note.index()-self.notes[0].index()
+                for note in self.notes]
 
-    def is_minor_chord(self):
-        return self.has_pattern(MINOR_PATTERN)
-
-    def is_minor_7th_chord(self):
-        return self.has_pattern(MINOR_7TH_PATTERN)
-
-    def is_major_chord(self):
-        return self.has_pattern(MAJOR_PATTERN)
+    def is_chord(self, chord):
+        return self.chord == chord
 
     def chord_types(self):
         chord_types = []
-        if (self.is_minor_chord()):
-            chord_types.append('minor')
-        if (self.is_minor_7th_chord()):
-            chord_types.append('minor_7th')
-        if (self.is_major_chord()):
-            chord_types.append('major')
+        for key, value in CHORD_PATTERNS.items():
+            if (self.is_chord(value)):
+                chord_types.append(key)
         return chord_types
 
     def info(self):
@@ -63,14 +57,14 @@ class Note:
     def create_chord(self, pattern):
         return Chord([Note(self.note).transpose(half_steps) for half_steps in pattern])
 
-    def create_minor_chord(self):
-        return self.create_chord(MINOR_PATTERN)
+    def minor(self):
+        return self.create_chord(CHORD_PATTERNS['minor'])
 
-    def create_minor_7th_chord(self):
-        return self.create_chord(MINOR_7TH_PATTERN)
+    def minor_7th(self):
+        return self.create_chord(CHORD_PATTERNS['minor_7h'])
 
-    def create_major_chord(self):
-        return self.create_chord(MAJOR_PATTERN)
+    def major(self):
+        return self.create_chord(CHORD_PATTERNS['major'])
 
 
 if __name__ == '__main__':
@@ -86,4 +80,4 @@ if __name__ == '__main__':
         if (chord.chord_types() != []):
             print(chord.info())
 
-    print(Note('F3').create_minor_7th_chord().info())
+    print(Note('F3').minor_7th().info())
